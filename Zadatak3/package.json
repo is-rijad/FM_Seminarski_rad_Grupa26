@@ -1,0 +1,16 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "Automatizovani testovi za seminarski rad iz predmeta Formalne metode. Seminarski rad radili članovi grupe 26.",
+  "scripts": {
+    "test": "mocha --file ./setup/setup.js tests/cart.spec.js tests/**/*.spec.js --timeout 30000"
+  },
+  "author": "Rijad Iširlija, IB210025",
+  "type": "commonjs",
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
+    "chromedriver": "^143.0.3",
+    "selenium-webdriver": "^4.39.0"
+  }
+}
