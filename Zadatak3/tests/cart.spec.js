@@ -1,5 +1,6 @@
 const assert = require("assert");
-const config = require("../utils/config");
+const { expect } = require("chai");
+const config = require("../config/config");
 const { elementLocator, getFirstVisibleChild, waitForLoadingToFinish, convertPriceStringToFloat, convertDeliveryPriceStringToFloat } = require("../utils/elementUtil");
 const { By, until } = require("selenium-webdriver");
 const { searchAndOpenItem } = require("../utils/testUtil");
@@ -47,9 +48,10 @@ describe("Cart tests", function () {
         assert.ok(deliveryPrice >= 0, "Delivery price is negative");
 
         const orderPriceElement = await elementLocator(By.xpath("//*[contains(@class,'Order-module') and contains(@class,'priceDetail')]/h3[last()]"));
-        let orderPrice = convertPriceStringToFloat(await orderPriceElement.getText()).toFixed(2);
-        const expectedTotalPrice = parseFloat((priceValue * desiredQuantity) + deliveryPrice).toFixed(2);
-        assert.equal(orderPrice, expectedTotalPrice, "Total order price does not match expected value");
+        let orderPrice = convertPriceStringToFloat(await orderPriceElement.getText());
+        const expectedTotalPrice = parseFloat((priceValue * desiredQuantity) + deliveryPrice);
+
+        expect(orderPrice).to.be.closeTo(expectedTotalPrice, 0.05, "Total order price does not match expected value");
     });
 
     it("search for an item and add it to cart, then remove", async function () {

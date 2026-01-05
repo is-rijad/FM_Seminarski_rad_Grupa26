@@ -1,5 +1,5 @@
 const { Builder } = require("selenium-webdriver");
-const config = require("./config");
+const config = require("../config/config");
 require("chromedriver");
 
 async function buildDriver() {

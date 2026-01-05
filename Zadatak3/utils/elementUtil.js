@@ -1,4 +1,4 @@
-const config = require("./config");
+const config = require("../config/config");
 const { By, until } = require("selenium-webdriver");
 
 async function elementLocator(locator, scrollIntoView = false) {

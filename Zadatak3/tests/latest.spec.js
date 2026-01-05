@@ -1,15 +1,16 @@
 const assert = require("assert");
-const { elementLocator, getFirstVisibleChild, waitForLoadingToFinish } = require("../utils/elementUtil");
+const { expect } = require("chai");
+const { elementLocator, getFirstVisibleChild, waitForLoadingToFinish, convertPriceStringToFloat } = require("../utils/elementUtil");
 const { By, until, Key } = require("selenium-webdriver");
 
 describe("Latest tests", function () {
-    it("open latest, then load more twice", async function () {
+    it("open latest, then load more twice and check count", async function () {
         const latestNavLink = await elementLocator(By.css("a[href='/latest']"));
         await latestNavLink.click();
         await waitForLoadingToFinish();
 
-        const viewAll = await global.driver.findElements(By.css("a[href*='/view-all']"));
-        await viewAll[0].click();
+        const viewAllNavLink = await global.driver.findElements(By.css("a[href*='/view-all']"));
+        await viewAllNavLink[0].click();
         await waitForLoadingToFinish();
 
         for (let i = 0; i < 2; i++) {
@@ -17,8 +18,8 @@ describe("Latest tests", function () {
             await global.driver.executeScript("arguments[0].click();", loadMoreButton);
             await global.driver.sleep(1000); // Wait for new items to load
         }
-
-        assert.ok(true, "Latest load more test passed");
+        const itemsElement = await global.driver.findElements(By.xpath("//*[contains(@class, 'item-container')]/a"));
+        assert.ok(itemsElement.length == 50, "Latest load more test passed");
     });
     it("open latest, then search for an item and check counts", async function () {
         const latestNavLink = await elementLocator(By.css("a[href='/latest']"));
@@ -52,5 +53,31 @@ describe("Latest tests", function () {
         } else {
             assert.equal(products.length, productsCount, "Products displayed should equal total count");
         }
+    });
+
+    it("open latest, then open product with discount and check discount", async function () {
+        const latestNavLink = await elementLocator(By.css("a[href='/latest']"));
+        await latestNavLink.click();
+        await waitForLoadingToFinish();
+
+        const firstProductWithDiscount = await getFirstVisibleChild(By.xpath("//h2[normalize-space()='Najnoviji proizvodi na popustu']/parent::*/parent::*/div[last()]/div/div/div/div[1]/a"), true);
+        await firstProductWithDiscount.click();
+        await waitForLoadingToFinish();
+
+        const priceElement = await elementLocator(By.xpath("//div[contains(@class, 'VariantHandler') and contains(@class, 'price')]"));
+
+        const discountElement = await priceElement.findElement(By.xpath(".//span[contains(., '%')]")).getText();
+        const discountValue = parseFloat(discountElement.replace('%', '').trim()).toFixed(2);
+
+        const priceBeforeDiscountElement = await priceElement.findElement(By.xpath(".//div/p")).getText();
+        const priceBeforeDiscountValue = convertPriceStringToFloat(priceBeforeDiscountElement);
+
+        const discountedPriceElement = await priceElement.findElement(By.xpath(".//h2")).getText();
+
+        const discountedPriceValue = convertPriceStringToFloat(discountedPriceElement);
+
+        const expectedDiscountedPrice = (priceBeforeDiscountValue - (priceBeforeDiscountValue * (discountValue / 100)));
+
+        expect(discountedPriceValue).to.be.closeTo(expectedDiscountedPrice, 0.05, "Discounted price should match the expected value after applying discount");
     });
 });

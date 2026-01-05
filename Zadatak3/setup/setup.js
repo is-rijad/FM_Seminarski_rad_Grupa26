@@ -1,4 +1,4 @@
-const config = require("../utils/config");
+const config = require("../config/config");
 const { buildDriver, openPage } = require("../utils/driver");
 
 console.log("SETUP FILE LOADED");
