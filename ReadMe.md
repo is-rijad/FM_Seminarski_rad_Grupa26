@@ -1,4 +1,4 @@
-Testirana je WEB aplikacija MyBazar. Pronađena su dva buga, jer se očekuje da svaka kategorija ili tag ima barem jedan artikal, što nije slučaj. Jedan bug je vezan za Wishlist dugme, koje se ne ponaša kako je očekivano.
+Testirana je WEB aplikacija MyBazar.
 
 ## Pokretanje testova
 
